@@ -1,0 +1,302 @@
+{
+  "info": {
+    "_postman_id": "78fbc41c-27aa-46be-ae9d-d44f0f9d748e",
+    "name": "FinEdge Personal Finance API",
+    "description": "Production validation collection for FinEdge modular MVC backend matching assignment grading metrics.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "7994609"
+  },
+  "item": [
+    {
+      "name": "System Health",
+      "item": [
+        {
+          "name": "Check Server Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/health",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Verifies that the Node.js server and database connection pool are fully operational."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User Management",
+      "item": [
+        {
+          "name": "Register New User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"fullName\": \"Ramya Sagi\",\n    \"email\": \"Ramya3@example.com\",\n    \"password\": \"securepassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/users/register",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "users",
+                "register"
+              ]
+            },
+            "description": "Validates input and provisions a new unique user profile document inside MongoDB."
+          },
+          "response": []
+        },
+        {
+          "name": "User Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"ramya3@example.com\",\n    \"password\": \"securepassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/users/login",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "Validates input and provisions a new unique user profile document inside MongoDB."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Transactions Processing",
+      "item": [
+        {
+          "name": "Create Income Transaction",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "if(jsonData.status === 'success' && jsonData.data.transaction._id) {",
+                  "    pm.globals.set(\"LATEST_TX_ID\", jsonData.data.transaction._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"type\": \"income\",\n    \"category\": \"Salary\",\n    \"amount\": 5000,\n    \"date\": \"2026-06-01T09:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/transactions",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "transactions"
+              ]
+            },
+            "description": "Logs a positive financial record. Automatically saves the returned ID into Postman variables."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Expense Transaction",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"type\": \"expense\",\n    \"category\": \"Rent\",\n    \"amount\": 1500,\n    \"date\": \"2026-06-02T10:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/transactions",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "transactions"
+              ]
+            },
+            "description": "Logs a debit transaction item against the global balance ledger."
+          },
+          "response": []
+        },
+        {
+          "name": "Fetch All Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/transactions",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "transactions"
+              ]
+            },
+            "description": "Extracts the complete array dataset populated inside your MongoDB transactions collection."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Transaction",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/transactions/{{LATEST_TX_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "transactions",
+                "{{LATEST_TX_ID}}"
+              ]
+            },
+            "description": "Isolates a single financial document using the ID saved from the creation block step."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Transaction (Patch)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"category\": \"Freelance Software Dev Support\",\n    \"amount\": 5500\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/transactions/{{LATEST_TX_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "transactions",
+                "{{LATEST_TX_ID}}"
+              ]
+            },
+            "description": "Modifies specific properties of a transaction document while keeping system fields safe."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Transaction",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/transactions/{{LATEST_TX_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "transactions",
+                "{{LATEST_TX_ID}}"
+              ]
+            },
+            "description": "Removes the target transaction document from MongoDB and drops the volatile tracking cache."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Analytics & Cache",
+      "item": [
+        {
+          "name": "Get Balance Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/summary",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "summary"
+              ]
+            },
+            "description": "Calculates total income, expenses, and net balance. Consecutive calls will show a source toggle from 'disk_storage' to 'cache_memory'."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if(!pm.globals.has(\"BASE_URL\")) {",
+          "    pm.globals.set(\"BASE_URL\", \"http://localhost:3000\");",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}
